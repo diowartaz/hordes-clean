@@ -4,6 +4,7 @@ import {
   DestroyRef,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { finalize, take } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -31,13 +32,13 @@ interface SignInForm {
   standalone: true,
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   formgroup!: FormGroup<SignInForm>;
-  loginLoading = false;
-  invalidAuthentification = false;
+  loginLoading = signal(false);
+  invalidAuthentification = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -64,7 +65,7 @@ export class LoginComponent implements OnInit {
     this.formgroup.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.invalidAuthentification = false;
+        this.invalidAuthentification.set(false);
       });
   }
 
@@ -75,15 +76,15 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    if (this.loginLoading) {
+    if (this.loginLoading()) {
       return;
     }
     this.formgroup.markAllAsTouched();
     if (this.formgroup.invalid) {
-      this.invalidAuthentification = true;
+      this.invalidAuthentification.set(true);
       return;
     }
-    this.loginLoading = true;
+    this.loginLoading.set(true);
     const params: SignInParams = {
       login: this.formgroup.controls.login.value,
       password: this.formgroup.controls.password.value,
@@ -93,27 +94,27 @@ export class LoginComponent implements OnInit {
       .pipe(
         take(1),
         finalize(() => {
-          this.loginLoading = false;
+          this.loginLoading.set(false);
         })
       )
       .subscribe((result: AuthResponse) => {
-        this.invalidAuthentification = false;
+        this.invalidAuthentification.set(false);
         this.handleAuthSuccess(result);
       });
   }
 
   loginTemp() {
-    if (this.loginLoading) {
+    if (this.loginLoading()) {
       return;
     }
-    this.loginLoading = true;
+    this.loginLoading.set(true);
 
     this.authService
       .signInTemp()
       .pipe(
         take(1),
         finalize(() => {
-          this.loginLoading = false;
+          this.loginLoading.set(false);
         })
       )
       .subscribe((result: AuthResponse) => {

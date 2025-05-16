@@ -57,9 +57,9 @@
       width: 100%;
       margin-bottom: 16px;
       padding: 16px 0px;
-      background-color: #3388ff;
+      background-color: var(--button-bg);
       border-radius: 12px;
-      color: white;
+      color: var(--button-color);
       font-weight: 500;
       cursor: pointer;
       transition: all 0.5s;
@@ -81,13 +81,13 @@
       opacity: 0.8;
     }
     .text-button {
-      color: #767676;
+      color: var(--txt-button-color);
       font-size: 13px;
       cursor: pointer;
       transition: all 0.5s;
     }
     .text-button:hover {
-      color: black;
+      color: var(--txt-button-hover-color);
     }
 
     .forgot-password {
