@@ -18,6 +18,7 @@ import { AuthResponse, SignInParams } from '../../models/auth';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RoutesEnum } from '../../models/routes';
 
 interface SignInForm {
   login: FormControl<string>;
@@ -33,6 +34,7 @@ interface SignInForm {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   formgroup!: FormGroup<SignInForm>;
   loginLoading = false;
   invalidAuthentification = false;
@@ -54,7 +56,7 @@ export class LoginComponent implements OnInit {
     });
 
     this.formgroup.valueChanges
-      .pipe(takeUntilDestroyed(inject(DestroyRef)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.invalidAuthentification = false;
       });
@@ -81,7 +83,7 @@ export class LoginComponent implements OnInit {
         this.invalidAuthentification = false;
         localStorage.setItem('token', result.token);
         localStorage.setItem('login', params.login);
-        this.router.navigate(['load-player']);
+        this.router.navigate([RoutesEnum.LOAD_PLAYER]);
         this.loginLoading = false;
       });
   }
@@ -98,13 +100,13 @@ export class LoginComponent implements OnInit {
       .subscribe((result: AuthResponse) => {
         localStorage.setItem('token', result.token);
         localStorage.setItem('login', result.email);
-        this.router.navigate(['load-player']);
+        this.router.navigate([RoutesEnum.LOAD_PLAYER]);
         this.loginLoading = false;
       });
   }
 
   signUp() {
-    this.router.navigate(['signup']);
+    this.router.navigate([RoutesEnum.SIGNUP]);
   }
 
   forgotPassword() {

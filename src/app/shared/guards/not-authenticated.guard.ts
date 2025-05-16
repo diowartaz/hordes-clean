@@ -6,7 +6,7 @@ export const notAuthenticatedGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.userIsLoggedIn()) {
+  if (!authService.userIsLoggedIn()) {
     return true;
   } else {
     const playRoute = localStorage.getItem('play-route') ?? '';
