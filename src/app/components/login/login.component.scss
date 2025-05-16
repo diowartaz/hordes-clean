@@ -28,9 +28,9 @@
       margin-bottom: 16px;
       border: 2px solid white;
       border-radius: 12px;
-      background-color: #f2f2f2;
+      background-color: var(--input-bg);
       input {
-        background-color: #f2f2f2;
+        background-color: var(--input-bg);
       }
       .input-field {
         display: block;

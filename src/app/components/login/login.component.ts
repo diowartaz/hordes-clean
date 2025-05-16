@@ -5,7 +5,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { take } from 'rxjs';
+import { finalize, take } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import {
@@ -42,24 +42,36 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    const savedLogin: string = localStorage.getItem('login') ?? '';
+    this.initializeForm();
+    this.subscribeToFormChanges();
+  }
 
+  private initializeForm(): void {
+    const savedLogin: string = localStorage.getItem('login') ?? '';
     this.formgroup = new FormGroup<SignInForm>({
-      login: new FormControl<string>(savedLogin, {
+      login: new FormControl(savedLogin, {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      password: new FormControl<string>('', {
+      password: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
       }),
     });
+  }
 
+  private subscribeToFormChanges(): void {
     this.formgroup.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.invalidAuthentification = false;
       });
+  }
+
+  private handleAuthSuccess(result: AuthResponse): void {
+    localStorage.setItem('token', result.token);
+    localStorage.setItem('login', result.email);
+    this.router.navigate([RoutesEnum.LOAD_PLAYER]);
   }
 
   login() {
@@ -78,13 +90,15 @@ export class LoginComponent implements OnInit {
     };
     this.authService
       .signIn(params)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.loginLoading = false;
+        })
+      )
       .subscribe((result: AuthResponse) => {
         this.invalidAuthentification = false;
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('login', params.login);
-        this.router.navigate([RoutesEnum.LOAD_PLAYER]);
-        this.loginLoading = false;
+        this.handleAuthSuccess(result);
       });
   }
 
@@ -96,12 +110,14 @@ export class LoginComponent implements OnInit {
 
     this.authService
       .signInTemp()
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.loginLoading = false;
+        })
+      )
       .subscribe((result: AuthResponse) => {
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('login', result.email);
-        this.router.navigate([RoutesEnum.LOAD_PLAYER]);
-        this.loginLoading = false;
+        this.handleAuthSuccess(result);
       });
   }
 
