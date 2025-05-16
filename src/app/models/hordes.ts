@@ -16,9 +16,9 @@ export interface CityModel {
   nb_zb_next_attack_max: number;
   nb_zb_next_attack_min: number;
   nb_zb_previous_attack: number;
-  buildings: Array<BuildingModel>;
-  skills: any;
-  nb_zb_history: Array<number>;
+  buildings: BuildingModel[];
+  skills: SkillModel[];
+  nb_zb_history: number[];
   inventory: object;
   speeds: SpeedsModel;
 }
@@ -41,6 +41,18 @@ export interface BuildingModel {
   enoughRessources: boolean;
   enoughTime: boolean;
   buildingTimeString: string;
+}
+
+export interface SkillModel {
+  id: string;
+  name: string;
+  speed_name: string;
+  lvl: string;
+  lvl_max: string;
+  lvl_max_max: string;
+  time: string;
+  avantage_per_lvl: string;
+  reduce_time_seconds: string;
 }
 
 export interface customInventoryModel {

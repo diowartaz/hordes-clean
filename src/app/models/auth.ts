@@ -4,6 +4,8 @@ export interface JwtPayload {
 }
 
 export interface AuthResponse {
+  email: string;
+  id: string;
   token: string;
 }
 
@@ -14,6 +16,6 @@ export interface SignUpParams {
 }
 
 export interface SignInParams {
-  email: string;
+  login: string;
   password: string;
 }
