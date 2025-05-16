@@ -159,7 +159,6 @@ export class CityService {
         ),
         seconds: this.defaultValues$.getValue().day_end_time,
       });
-      // this.endDay()
       return;
     }
     this.userPlayerCityTime$.next({
@@ -183,7 +182,7 @@ export class CityService {
       //fin de journee
     } else {
       this.userPlayerCityTime$.next({
-        string: getTimeString(x),
+        string: formatTimeToString(x, true),
         seconds: x,
       });
     }
