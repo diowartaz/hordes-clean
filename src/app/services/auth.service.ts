@@ -1,0 +1,51 @@
+import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import {
+  AuthResponse,
+  JwtPayload,
+  SignInParams,
+  SignUpParams,
+} from '../models/auth';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private jwtHelper = new JwtHelperService();
+  private readonly API_URL = environment.API_URL;
+
+  constructor(private httpClient: HttpClient) {}
+
+  userIsLoggedIn(): boolean {
+    const token = localStorage.getItem('token');
+    return token ? !this.jwtHelper.isTokenExpired(token) : false;
+  }
+
+  parseJwt(): null | { [key: string]: any } {
+    const token = localStorage.getItem('token');
+    return token ? this.jwtHelper.decodeToken(token) : null;
+  }
+
+  getUserId(): string | null {
+    const payload = this.parseJwt();
+    return payload ? payload['id'] : null;
+  }
+
+  signIn(params: SignInParams): Observable<AuthResponse> {
+    const url = `${this.API_URL}signin`;
+    return this.httpClient.post<AuthResponse>(url, params);
+  }
+
+  signInTemp(): Observable<AuthResponse> {
+    const url = `${this.API_URL}signin-temp`;
+    return this.httpClient.post<AuthResponse>(url, {});
+  }
+
+  signUp(params: SignUpParams): Observable<AuthResponse> {
+    const url = `${this.API_URL}signup`;
+    return this.httpClient.post<AuthResponse>(url, params);
+  }
+}
