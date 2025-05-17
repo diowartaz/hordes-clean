@@ -12,7 +12,7 @@ export interface AuthResponse {
 export interface SignUpParams {
   email: string;
   password: string;
-  username?: string;
+  username: string;
 }
 
 export interface SignInParams {

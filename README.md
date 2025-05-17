@@ -1,3 +1,8 @@
 checker pourquoi endDayModel a le state deux fois (dans la city et dans player)
 
-computed signal
+trucs
+signals and computed signal
+linter
+prettier
+tres bon typage
+typed formgroup

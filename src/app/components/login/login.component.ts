@@ -25,12 +25,11 @@ interface SignInForm {
   standalone: true,
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   formgroup!: FormGroup<SignInForm>;
-  loginLoading = signal(false);
+  loading = signal(false);
   invalidAuthentification = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -69,7 +68,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    if (this.loginLoading()) {
+    if (this.loading()) {
       return;
     }
     this.formgroup.markAllAsTouched();
@@ -77,7 +76,7 @@ export class LoginComponent implements OnInit {
       this.invalidAuthentification.set(true);
       return;
     }
-    this.loginLoading.set(true);
+    this.loading.set(true);
     const params: SignInParams = {
       login: this.formgroup.controls.login.value,
       password: this.formgroup.controls.password.value,
@@ -87,7 +86,7 @@ export class LoginComponent implements OnInit {
       .pipe(
         take(1),
         finalize(() => {
-          this.loginLoading.set(false);
+          this.loading.set(false);
         })
       )
       .subscribe((result: AuthResponse) => {
@@ -97,17 +96,17 @@ export class LoginComponent implements OnInit {
   }
 
   loginTemp() {
-    if (this.loginLoading()) {
+    if (this.loading()) {
       return;
     }
-    this.loginLoading.set(true);
+    this.loading.set(true);
 
     this.authService
       .signInTemp()
       .pipe(
         take(1),
         finalize(() => {
-          this.loginLoading.set(false);
+          this.loading.set(false);
         })
       )
       .subscribe((result: AuthResponse) => {

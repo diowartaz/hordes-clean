@@ -33,7 +33,7 @@ export class CityService {
   cityTimeSecondsString = computed(() =>
     formatTimeToString(this.cityTimeSeconds(), true)
   );
-  setInterval!: NodeJS.Timeout;
+  intervalId!: ReturnType<typeof setInterval>;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -126,8 +126,8 @@ export class CityService {
 
   updateTime(city: CityModel) {
     if (!this.city()) {
-      if (this.setInterval) {
-        clearInterval(this.setInterval);
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
       }
       return;
     }
@@ -138,17 +138,17 @@ export class CityService {
     );
     if (city.time + timeToAdd > this.defaultValues().day_end_time) {
       //fin de journee
-      if (this.setInterval) {
-        clearInterval(this.setInterval);
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
       }
       this.cityTimeSeconds.set(this.defaultValues().day_end_time);
       return;
     }
     this.cityTimeSeconds.set(city.time + timeToAdd);
-    if (this.setInterval) {
-      clearInterval(this.setInterval);
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
     }
-    this.setInterval = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.addTime();
     }, Math.floor((60 * 1000) / this.defaultValues().coef_realtime_to_ingametime));
   }
@@ -156,8 +156,8 @@ export class CityService {
   addTime() {
     const x = this.cityTimeSeconds() + 60;
     if (x >= this.defaultValues().day_end_time) {
-      if (this.setInterval) {
-        clearInterval(this.setInterval);
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
       }
       //fin de journee
     } else {
