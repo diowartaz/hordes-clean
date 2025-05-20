@@ -38,22 +38,22 @@ export class CityService {
   lazyCityTimeSeconds = signal<number>(8 * 60 * 60);
   countUpdateCityTimeSeconds = signal<number>(0);
 
-  // private readonly _trackCityTimeEffect = effect(() => {
-  //   this.cityTimeSeconds(); // must use this. to access class members
-  //   this.countUpdateCityTimeSeconds.set(this.countUpdateCityTimeSeconds() + 1);
+  private readonly _trackCityTimeEffect = effect(() => {
+    this.cityTimeSeconds();
+    this.countUpdateCityTimeSeconds.set(this.countUpdateCityTimeSeconds() + 1);
 
-  //   if (this.countUpdateCityTimeSeconds() % 5 === 0) {
-  //     this.lazyCityTimeSeconds.set(this.cityTimeSeconds());
-  //   }
-  // });
+    if (this.countUpdateCityTimeSeconds() % 5 === 0) {
+      this.lazyCityTimeSeconds.set(this.cityTimeSeconds());
+    }
+  });
 
-  // private readonly _trackCityTimeEffect2 = effect(() => {
-  //   console.log('The cityTimeSeconds is', this.cityTimeSeconds());
-  // });
+  private readonly _trackCityTimeEffect2 = effect(() => {
+    console.log('The cityTimeSeconds is', this.cityTimeSeconds());
+  });
 
-  // private readonly _trackCityTimeEffect3 = effect(() => {
-  //   console.log('The lazyCityTimeSeconds is', this.lazyCityTimeSeconds());
-  // });
+  private readonly _trackCityTimeEffect3 = effect(() => {
+    console.log('The lazyCityTimeSeconds is', this.lazyCityTimeSeconds());
+  });
 
   constructor(private httpClient: HttpClient) {}
 
