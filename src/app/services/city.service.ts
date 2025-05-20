@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -24,16 +24,36 @@ import { formatTimeToString } from '../shared/utils/time';
 })
 export class CityService {
   API_URL = environment.API_URL;
+  intervalId!: ReturnType<typeof setInterval>;
   city = signal<CityModel>(createDefaultCityModel());
   stats = signal<StatsModel>(createDefaultStatsModel());
   defaultValues = signal<DefaultValuesModel>(createDefaultDefaultValuesModel());
   state = signal<string>('noCity');
   playerLoaded = signal<boolean>(false);
+  lastRequestTimeStamp = signal<number>(new Date().getTime());
   cityTimeSeconds = signal<number>(8 * 60 * 60);
   cityTimeSecondsString = computed(() =>
     formatTimeToString(this.cityTimeSeconds(), true)
   );
-  intervalId!: ReturnType<typeof setInterval>;
+  lazyCityTimeSeconds = signal<number>(8 * 60 * 60);
+  countUpdateCityTimeSeconds = signal<number>(0);
+
+  // private readonly _trackCityTimeEffect = effect(() => {
+  //   this.cityTimeSeconds(); // must use this. to access class members
+  //   this.countUpdateCityTimeSeconds.set(this.countUpdateCityTimeSeconds() + 1);
+
+  //   if (this.countUpdateCityTimeSeconds() % 5 === 0) {
+  //     this.lazyCityTimeSeconds.set(this.cityTimeSeconds());
+  //   }
+  // });
+
+  // private readonly _trackCityTimeEffect2 = effect(() => {
+  //   console.log('The cityTimeSeconds is', this.cityTimeSeconds());
+  // });
+
+  // private readonly _trackCityTimeEffect3 = effect(() => {
+  //   console.log('The lazyCityTimeSeconds is', this.lazyCityTimeSeconds());
+  // });
 
   constructor(private httpClient: HttpClient) {}
 
@@ -43,15 +63,16 @@ export class CityService {
       map((response: LoadPlayerModel) => {
         //TODO: if erreur: vider le local storage
         this.log('loadPlayer', response);
+        const city = response.player.city
+          ? response.player.city
+          : createDefaultCityModel();
+
         this.state.set(response.player.state);
         this.stats.set(response.player.stats);
-        this.city.set(
-          response.player.city ? response.player.city : createDefaultCityModel()
-        );
+        this.lastRequestTimeStamp.set(city.last_timestamp_request);
+        this.city.set(city);
         this.defaultValues.set(response.default_values);
-        this.updateTime(
-          response.player.city ? response.player.city : createDefaultCityModel()
-        );
+        this.updateTime(city.time);
         this.playerLoaded.set(true);
         return response;
       })
@@ -63,9 +84,12 @@ export class CityService {
     return this.httpClient.post<endDayModel>(url, {}).pipe(
       map((response: endDayModel) => {
         this.log('new', response);
+        this.lastRequestTimeStamp.set(
+          response.player.city.last_timestamp_request
+        );
         this.city.set(response.player.city);
         this.state.set(response.player.state);
-        this.updateTime(response.player.city);
+        this.updateTime(response.player.city.time);
         return response;
       })
     );
@@ -88,8 +112,9 @@ export class CityService {
     return this.httpClient.post<FindItemsModel>(url, {}).pipe(
       map((response: FindItemsModel) => {
         this.log('findItems', response);
+        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
-        this.updateTime(response.city);
+        this.updateTime(response.city.time);
         return response;
       })
     );
@@ -100,7 +125,8 @@ export class CityService {
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
         this.log('build', response);
-        this.updateTime(response.city);
+        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
+        this.updateTime(response.city.time);
         this.city.set(response.city);
         return response;
       })
@@ -112,57 +138,12 @@ export class CityService {
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
         this.log('learn', response);
+        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
-        this.updateTime(response.city);
+        this.updateTime(response.city.time);
         return response;
       })
     );
-  }
-
-  log(functionName: string, response: unknown) {
-    return;
-    console.log(functionName, 'response', response);
-  }
-
-  updateTime(city: CityModel) {
-    if (!this.city()) {
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
-      }
-      return;
-    }
-    const timeToAdd = Math.floor(
-      ((new Date().getTime() - this.city().last_timestamp_request) *
-        this.defaultValues().coef_realtime_to_ingametime) /
-        1000
-    );
-    if (city.time + timeToAdd > this.defaultValues().day_end_time) {
-      //fin de journee
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
-      }
-      this.cityTimeSeconds.set(this.defaultValues().day_end_time);
-      return;
-    }
-    this.cityTimeSeconds.set(city.time + timeToAdd);
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-    this.intervalId = setInterval(() => {
-      this.addTime();
-    }, Math.floor((60 * 1000) / this.defaultValues().coef_realtime_to_ingametime));
-  }
-
-  addTime() {
-    const x = this.cityTimeSeconds() + 60;
-    if (x >= this.defaultValues().day_end_time) {
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
-      }
-      //fin de journee
-    } else {
-      this.cityTimeSeconds.set(x);
-    }
   }
 
   endDay(): Observable<endDayModel> {
@@ -170,7 +151,6 @@ export class CityService {
     return this.httpClient.post<endDayModel>(url, {}).pipe(
       map((response: endDayModel) => {
         this.log('endDay', response);
-        this.city.set(response.player.city);
         this.stats.set(response.player.stats);
         this.state.set(response.player.state);
         return response;
@@ -182,11 +162,11 @@ export class CityService {
     const url: string = this.API_URL + 'city/day/start';
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
-        //city
         this.log('startDay', response);
+        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
-        this.state.set('playing');
-        this.updateTime(response.city);
+        this.state.set(response.city.state);
+        this.updateTime(response.city.time);
         return response;
       })
     );
@@ -208,5 +188,23 @@ export class CityService {
         return response;
       })
     );
+  }
+
+  log(functionName: string, response: unknown) {
+    return;
+    console.log(functionName, 'response', response);
+  }
+
+  updateTime(timeSeconds: number) {
+    if (this.intervalId) clearInterval(this.intervalId);
+    this.cityTimeSeconds.set(timeSeconds);
+
+    const intervalMs = Math.floor(
+      (60 * 1000) / this.defaultValues().coef_realtime_to_ingametime
+    ); //312,5 => toutes les 0.3125 secondes
+
+    this.intervalId = setInterval(() => {
+      this.cityTimeSeconds.set(this.cityTimeSeconds() + 60);
+    }, intervalMs);
   }
 }

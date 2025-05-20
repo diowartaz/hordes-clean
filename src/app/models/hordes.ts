@@ -51,7 +51,7 @@ export function createDefaultCityModel(): CityModel {
       learn: 0,
       insomniac: 0,
     },
-    last_timestamp_request: 0,
+    last_timestamp_request: new Date().getTime(),
     state: 'noCity',
     attackRecap: {
       architect_shelter_buildings: [],

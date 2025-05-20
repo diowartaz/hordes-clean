@@ -108,7 +108,7 @@ export class SignUpComponent implements OnInit {
         })
       )
       .subscribe((result: AuthResponse | { error: string }) => {
-        //TODO: Gérer le cas où l'email ou le nom d'utilisateur existe déjà
+        //TODO: Gérer le cas où l'email ou le nom d'utilisateur existe déjà: voir ancien projet
         if ('error' in result) {
           this.invalid.set(true);
         } else {
