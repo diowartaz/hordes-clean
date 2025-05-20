@@ -16,8 +16,10 @@ import {
   LoadPlayerModel,
   ProfilModel,
   StatsModel,
+  XPToLVL,
 } from '../models/hordes';
 import { formatTimeToString } from '../shared/utils/time';
+import { XPToLVLandXP, xpToLvl } from '../shared/utils/xp';
 
 @Injectable({
   providedIn: 'root',
@@ -27,16 +29,22 @@ export class CityService {
   intervalId!: ReturnType<typeof setInterval>;
   city = signal<CityModel>(createDefaultCityModel());
   stats = signal<StatsModel>(createDefaultStatsModel());
+  lvlAndXp = computed<XPToLVL>(() => XPToLVLandXP(this.stats().xp));
   defaultValues = signal<DefaultValuesModel>(createDefaultDefaultValuesModel());
   state = signal<string>('noCity');
   playerLoaded = signal<boolean>(false);
-  lastRequestTimeStamp = signal<number>(new Date().getTime());
   cityTimeSeconds = signal<number>(8 * 60 * 60);
-  cityTimeSecondsString = computed(() =>
+  cityTimeSecondsString = computed<string>(() =>
     formatTimeToString(this.cityTimeSeconds(), true)
   );
   lazyCityTimeSeconds = signal<number>(8 * 60 * 60);
   countUpdateCityTimeSeconds = signal<number>(0);
+  dayStartCalculatedTime = computed(() => {
+    return this.defaultValues().day_start_time - xpToLvl(this.stats().xp) * 60;
+  });
+  digCalculatedTime = computed(() => {
+    return this.defaultValues().digging_time - this.city().speeds.dig;
+  });
 
   private readonly _trackCityTimeEffect = effect(() => {
     this.cityTimeSeconds();
@@ -69,7 +77,6 @@ export class CityService {
 
         this.state.set(response.player.state);
         this.stats.set(response.player.stats);
-        this.lastRequestTimeStamp.set(city.last_timestamp_request);
         this.city.set(city);
         this.defaultValues.set(response.default_values);
         this.updateTime(city.time);
@@ -84,9 +91,6 @@ export class CityService {
     return this.httpClient.post<endDayModel>(url, {}).pipe(
       map((response: endDayModel) => {
         this.log('new', response);
-        this.lastRequestTimeStamp.set(
-          response.player.city.last_timestamp_request
-        );
         this.city.set(response.player.city);
         this.state.set(response.player.state);
         this.updateTime(response.player.city.time);
@@ -112,7 +116,6 @@ export class CityService {
     return this.httpClient.post<FindItemsModel>(url, {}).pipe(
       map((response: FindItemsModel) => {
         this.log('findItems', response);
-        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
         this.updateTime(response.city.time);
         return response;
@@ -125,7 +128,6 @@ export class CityService {
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
         this.log('build', response);
-        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.updateTime(response.city.time);
         this.city.set(response.city);
         return response;
@@ -138,7 +140,6 @@ export class CityService {
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
         this.log('learn', response);
-        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
         this.updateTime(response.city.time);
         return response;
@@ -151,6 +152,7 @@ export class CityService {
     return this.httpClient.post<endDayModel>(url, {}).pipe(
       map((response: endDayModel) => {
         this.log('endDay', response);
+        this.city.set(response.player.city);
         this.stats.set(response.player.stats);
         this.state.set(response.player.state);
         return response;
@@ -163,7 +165,6 @@ export class CityService {
     return this.httpClient.post<CityWrapperModel>(url, {}).pipe(
       map((response: CityWrapperModel) => {
         this.log('startDay', response);
-        this.lastRequestTimeStamp.set(response.city.last_timestamp_request);
         this.city.set(response.city);
         this.state.set(response.city.state);
         this.updateTime(response.city.time);

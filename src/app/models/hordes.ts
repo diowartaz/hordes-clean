@@ -113,15 +113,15 @@ export interface BuildingModel {
 }
 
 export interface SkillModel {
-  id: string;
+  id: number;
   name: string;
   speed_name: string;
-  lvl: string;
-  lvl_max: string;
-  lvl_max_max: string;
-  time: string;
-  avantage_per_lvl: string;
-  reduce_time_seconds: string;
+  lvl: number;
+  lvl_max: number;
+  lvl_max_max: number;
+  time: number;
+  avantage_per_lvl: number;
+  reduce_time_seconds: number;
 }
 
 export interface customInventoryModel {

@@ -5,6 +5,7 @@ import { RoutesEnum } from './models/routes';
 import { gameLoadedGuard } from './shared/guards/game-loaded.guard';
 import { authGuard } from './shared/guards/auth.guard';
 import { stateGuard } from './shared/guards/state.guard';
+import { HordesComponent } from './components/hordes/hordes.component';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
 
   {
     path: RoutesEnum.PLAY,
-    component: LoginComponent,
+    component: HordesComponent,
     canActivate: [authGuard, gameLoadedGuard, stateGuard],
   },
   { path: '', redirectTo: RoutesEnum.PLAY, pathMatch: 'full' },

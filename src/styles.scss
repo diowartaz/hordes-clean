@@ -1,12 +1,54 @@
-/* You can add global styles to this file, and also import other style files */
-
-html,
-body {
-  height: 100%;
-}
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 500;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0px;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.full-dim {
+  height: 100%;
+  width: 100%;
+}
+
+html,
+body {
+  height: calc(100%);
+}
+
+.dialog-class {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 6px;
+  text-align: center;
+  width: calc(100% - 16px);
+  border: 1px solid white;
+  border-radius: 4px;
+  color: white;
+  background-color: #e85e5e;
+  padding: 12px 8px;
+  max-width: 568px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
 }
 
 :root {
@@ -16,4 +58,14 @@ body {
   --button-color: white;
   --txt-button-color: #767676;
   --txt-button-hover-color: black;
+
+  --basic-red: red;
+  --border-white-transparent: 1px solid rgba(255, 255, 255, 0.8);
+  --background-black-opacity-zero-trois: rgba(0, 0, 0, 0.3);
+  --background-black-opacity-zero-six: rgba(0, 0, 0, 0.6);
+  --primary-yellow: #f5a201;
+  --primary-yellow-disabled: #f5a201a8; //#f5a201a8 #8a6620 #c3beb4b8
+  --danger-red: #dc1a1a;
+  --primary-blue: rgb(20, 96, 154);
+  --primary-dark-blue: rgb(18, 83, 139);
 }

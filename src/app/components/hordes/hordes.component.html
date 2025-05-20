@@ -1,0 +1,153 @@
+<div class="boundary">
+  <div class="header">
+    <div class="xp-wrapper">
+      <div class="xp-icon">{{ cityService.lvlAndXp().lvl }}</div>
+      <div class="xp-bar-wrapper">
+        <progress class="xp-bar" max="100" value="70"></progress>
+        <div class="xp-string">{{ cityService.lvlAndXp().xpString }}</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- <button class="icon-btn">
+        <span class="material-symbols-outlined icon"> mail </span>
+      </button> -->
+      <a class="icon-btn" href="https://discord.gg/qFnSBa8P9Z" target="_blank">
+        <img
+          style="height: 24px; width: 24px"
+          alt="discord icon"
+          src="../../../assets/icons/discord_icon.png"
+      /></a>
+      <button
+        class="icon-btn"
+        [routerLink]="[RouteEnum.PROFIL]"
+        [queryParams]="{ user_id: authService.getUserId() }"
+      >
+        <span class="material-symbols-outlined icon">person</span>
+      </button>
+      <button class="icon-btn" [routerLink]="[RouteEnum.LEADERBOARD]">
+        <img
+          style="height: 24px; width: 24px"
+          alt="leaderboard icon"
+          src="../../../assets/icons/leaderboard.gif"
+        />
+      </button>
+      <button class="icon-btn" [routerLink]="[RouteEnum.SETTINGS]">
+        <span class="material-symbols-outlined icon"> settings </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="second-header">
+    <div class="second-header-left">
+      <div class="second-header-element">
+        <img
+          class="icon"
+          alt="calendar icon"
+          src="../../../assets/icons/calendar.ico"
+        />
+        <span class="text-span">{{ cityService.city().day }}</span>
+      </div>
+
+      <div class="second-header-element">
+        <span class="material-symbols-outlined icon"> schedule </span>
+        <span class="text-span">{{ cityService.cityTimeSecondsString() }}</span>
+      </div>
+
+      <div class="second-header-element">
+        <img
+          class="icon"
+          alt="defense icon"
+          src="../../../assets/icons/defense.gif"
+        />
+        <span class="text-span">{{ cityService.city().defense }}</span>
+      </div>
+      <div class="second-header-element">
+        <img
+          class="icon"
+          alt="zombies icon"
+          src="../../../assets/icons/zb.gif"
+        />
+
+        <span
+          style="margin-left: 0px"
+          class="text-span"
+          [ngClass]="{
+            danger:
+              cityService.city().nb_zb_next_attack_max >
+              cityService.city().defense
+          }"
+          >{{ cityService.city().nb_zb_next_attack_min }}-{{
+            cityService.city().nb_zb_next_attack_max
+          }}</span
+        >
+      </div>
+    </div>
+
+    <button
+      class="icon-btn borderBlink"
+      [ngClass]="{ borderBlink2: cityService.cityTimeSeconds() > 79200 }"
+      style="margin-left: 8px"
+      (click)="endDay()"
+    >
+      <img
+        style="height: 24px"
+        class="xp-icon"
+        alt="Go to sleep icon"
+        src="../../../assets/icons/sleep.gif"
+      />
+    </button>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <div class="footer">
+    <button
+      [ngStyle]="
+        content() === 'dig'
+          ? { background: 'var(--background-black-opacity-zero-six)' }
+          : null
+      "
+      class="footer-btn"
+      (click)="changeContent('dig')"
+    >
+      <img class="icon" alt="dig icon" src="../../../assets/icons/pelle.gif" />
+      <span class="span">Dig</span>
+    </button>
+    <button
+      class="footer-btn"
+      (click)="changeContent('learn')"
+      [ngStyle]="
+        content() === 'learn'
+          ? { background: 'var(--background-black-opacity-zero-six)' }
+          : null
+      "
+    >
+      <img
+        class="icon"
+        alt="Learn icon"
+        src="../../../assets/icons/livre.gif"
+      />
+      <span class="span">Learn</span>
+    </button>
+    <button
+      class="footer-btn"
+      (click)="changeContent('build')"
+      [ngStyle]="
+        content() === 'build'
+          ? { background: 'var(--background-black-opacity-zero-six)' }
+          : null
+      "
+    >
+      <img
+        class="icon"
+        alt="build icon"
+        src="../../../assets/icons/building.webp"
+      />
+      <span class="span">Build</span>
+    </button>
+  </div>
+</div>

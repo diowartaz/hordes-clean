@@ -41,6 +41,7 @@ module.exports = tseslint.config(
     rules: {
       "@angular-eslint/template/click-events-have-key-events": "off",
       "@angular-eslint/template/interactive-supports-focus": "off",
+      "@angular-eslint/template/alt-text": "off",
     },
   }
 );
