@@ -11,7 +11,6 @@ export const notAuthenticatedGuard: CanActivateFn = () => {
     return true;
   } else {
     const playRoute = localStorage.getItem('play-route') ?? '';
-    router.navigate([RoutesEnum.PLAY, playRoute]);
-    return false;
+    return router.createUrlTree([RoutesEnum.PLAY, playRoute]);
   }
 };

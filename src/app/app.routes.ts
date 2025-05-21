@@ -6,6 +6,7 @@ import { gameLoadedGuard } from './shared/guards/game-loaded.guard';
 import { authGuard } from './shared/guards/auth.guard';
 import { stateGuard } from './shared/guards/state.guard';
 import { HordesComponent } from './components/hordes/hordes.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
 
 export const routes: Routes = [
   {
@@ -13,11 +14,16 @@ export const routes: Routes = [
     component: LoginComponent,
     canActivate: [notAuthenticatedGuard],
   },
+  {
+    path: RoutesEnum.SIGNUP,
+    component: SignUpComponent,
+    canActivate: [notAuthenticatedGuard],
+  },
 
   {
     path: RoutesEnum.PLAY,
     component: HordesComponent,
-    canActivate: [authGuard, gameLoadedGuard, stateGuard],
+    canActivate: [authGuard], //, gameLoadedGuard, stateGuard
   },
   { path: '', redirectTo: RoutesEnum.PLAY, pathMatch: 'full' },
   { path: '**', redirectTo: RoutesEnum.PLAY },

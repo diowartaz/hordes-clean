@@ -16,8 +16,7 @@ export const stateGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
 
   if (!cityService.playerLoaded()) {
-    router.navigate([RoutesEnum.LOAD_PLAYER]);
-    return false;
+    return router.createUrlTree([RoutesEnum.LOAD_PLAYER]);
   }
   let desiredStateFromUrl = '';
   for (const [key, value] of Object.entries(statesToRoutes)) {
@@ -28,7 +27,6 @@ export const stateGuard: CanActivateFn = (_route, state) => {
   if (cityService.state() === desiredStateFromUrl) {
     return true;
   } else {
-    router.navigate([statesToRoutes[desiredStateFromUrl]]);
-    return false;
+    return router.createUrlTree([desiredStateFromUrl]);
   }
 };

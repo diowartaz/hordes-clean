@@ -19,11 +19,11 @@ export class HordesComponent implements OnInit {
   content = signal<string>('dig');
   readonly RouteEnum = RoutesEnum;
 
-  private _endDayEffect = effect(() => {
-    if (this.cityService.cityTimeSeconds() > 24 * 60 * 60) {
-      this.endDay();
-    }
-  });
+  // private _endDayEffect = effect(() => {
+  //   if (this.cityService.cityTimeSeconds() > 24 * 60 * 60) {
+  //     this.endDay();
+  //   }
+  // });
 
   constructor(
     public cityService: CityService,

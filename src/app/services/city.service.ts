@@ -46,22 +46,22 @@ export class CityService {
     return this.defaultValues().digging_time - this.city().speeds.dig;
   });
 
-  private readonly _trackCityTimeEffect = effect(() => {
-    this.cityTimeSeconds();
-    this.countUpdateCityTimeSeconds.set(this.countUpdateCityTimeSeconds() + 1);
+  // private readonly _trackCityTimeEffect = effect(() => {
+  //   this.cityTimeSeconds();
+  //   this.countUpdateCityTimeSeconds.set(this.countUpdateCityTimeSeconds() + 1);
 
-    if (this.countUpdateCityTimeSeconds() % 5 === 0) {
-      this.lazyCityTimeSeconds.set(this.cityTimeSeconds());
-    }
-  });
+  //   if (this.countUpdateCityTimeSeconds() % 5 === 0) {
+  //     this.lazyCityTimeSeconds.set(this.cityTimeSeconds());
+  //   }
+  // });
 
-  private readonly _trackCityTimeEffect2 = effect(() => {
-    console.log('The cityTimeSeconds is', this.cityTimeSeconds());
-  });
+  // private readonly _trackCityTimeEffect2 = effect(() => {
+  //   console.log('The cityTimeSeconds is', this.cityTimeSeconds());
+  // });
 
-  private readonly _trackCityTimeEffect3 = effect(() => {
-    console.log('The lazyCityTimeSeconds is', this.lazyCityTimeSeconds());
-  });
+  // private readonly _trackCityTimeEffect3 = effect(() => {
+  //   console.log('The lazyCityTimeSeconds is', this.lazyCityTimeSeconds());
+  // });
 
   constructor(private httpClient: HttpClient) {}
 
@@ -192,11 +192,12 @@ export class CityService {
   }
 
   log(functionName: string, response: unknown) {
-    return;
+    // return;
     console.log(functionName, 'response', response);
   }
 
   updateTime(timeSeconds: number) {
+    return;
     if (this.intervalId) clearInterval(this.intervalId);
     this.cityTimeSeconds.set(timeSeconds);
 
