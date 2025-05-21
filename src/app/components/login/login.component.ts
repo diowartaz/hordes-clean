@@ -118,10 +118,6 @@ export class LoginComponent implements OnInit {
     this.router.navigate([RoutesEnum.SIGNUP]);
   }
 
-  forgotPassword() {
-    console.log('TODO');
-  }
-
   fieldHasError(field: keyof SignInForm): boolean {
     const control = this.formgroup.controls[field];
     return control.touched && control.invalid;

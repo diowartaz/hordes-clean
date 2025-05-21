@@ -7,8 +7,6 @@ export const gameLoadedGuard: CanActivateFn = (_route, state) => {
   const cityService = inject(CityService);
   const router = inject(Router);
 
-  console.log(cityService.playerLoaded());
-
   if (!cityService.playerLoaded()) {
     if (state.url.split('/')[1] === RoutesEnum.PLAY) {
       localStorage.setItem('play-route', state.url.split('/')[2]);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CityService } from '../../services/city.service';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
